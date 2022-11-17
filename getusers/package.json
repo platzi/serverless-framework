@@ -1,0 +1,19 @@
+{
+  "name": "hola-mundo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "aws-sdk": "^2.1256.0",
+    "serverless": "^3.21.0",
+    "serverless-offline": "^11.3.0"
+  },
+  "dependencies": {
+    "serverless-dynamodb-local": "^0.2.40"
+  }
+}
