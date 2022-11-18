@@ -1,0 +1,73 @@
+name: Deploy DEV
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  testing-changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    name: Build/Test
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: NPM - Install dependencies
+      if: steps.cached-npm-dependencies.outputs.cache-hit != 'true'
+      run: 'npm install'
+
+    - name: Run Tests
+      run: |
+        source .venv/bin/activate
+        pytest --cov=app tests/ --cov-report xml:cov.xml
+
+    - name: Override Coverage Source Path for Sonar
+      run: sed -i 's/\/home\/runner\/work\/trip-planner-activities\/trip-planner-activities\//\/github\/workspace\//g' ./cov.xml
+
+    - name: Upload test coverage result
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage
+        path: cov.xml
+        retention-days: 1
+
+  deploy-env:
+    name: Deploy Lambda
+    runs-on: ubuntu-latest
+    needs: testing-changes
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v2.0.0
+    - name: NPM - Load cached venv
+      id: cached-npm-dependencies
+      uses: actions/cache@v2
+      with:
+        path: node_modules
+        key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+    - name: NPM - Install dependencies
+      if: steps.cached-npm-dependencies.outputs.cache-hit != 'true'
+      run: 'npm install'
+
+    - name: Deploy using sls
+      run: 'npx sls deploy'
+      env:
+        AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
+        AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+
+    - name: Comment PR
+      uses: thollander/actions-comment-pull-request@v1
+      with:
+        message: |
+          Your SLS App was deployed!
+          Awesome :D
+
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
