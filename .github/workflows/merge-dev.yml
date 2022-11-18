@@ -26,18 +26,14 @@ jobs:
 
     - name: Run Tests
       run: |
-        source .venv/bin/activate
-        pytest --cov=app tests/ --cov-report xml:cov.xml
+        npm run dummytest
 
-    - name: Override Coverage Source Path for Sonar
-      run: sed -i 's/\/home\/runner\/work\/trip-planner-activities\/trip-planner-activities\//\/github\/workspace\//g' ./cov.xml
-
-    - name: Upload test coverage result
-      uses: actions/upload-artifact@v3
-      with:
-        name: coverage
-        path: cov.xml
-        retention-days: 1
+    # - name: Upload test coverage result
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: coverage
+    #     path: cov.xml
+    #     retention-days: 1
 
   deploy-env:
     name: Deploy Lambda
