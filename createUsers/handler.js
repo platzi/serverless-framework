@@ -1,4 +1,5 @@
 const aws = require("aws-sdk")
+const { randomUUID } = require("crypto")
 
 let dynamoDBClientParams = {}
 
@@ -13,25 +14,30 @@ if (process.env.IS_OFFLINE) {
 
 const dynamodb = new aws.DynamoDB.DocumentClient(dynamoDBClientParams)
 
-const getUsers = async (event, context) => {
+const createUsers = async (event, context) => {
 
-    let userId = event.pathParameters.id
+    const id = randomUUID();
+
+    let userBody = JSON.parse(event.body)
+
+    userBody.pk = id
 
     var params = {
-        ExpressionAttributeValues: { ':pk': userId },
-        KeyConditionExpression: 'pk = :pk',
-        TableName: 'usersTable'
+        TableName: 'usersTable',
+        Item: userBody
     };
 
-    return dynamodb.query(params).promise().then(res => {
+    console.log(params.Item)
+
+    return dynamodb.put(params).promise().then(res => {
         console.log(res)
         return {
             "statusCode": 200,
-            "body": JSON.stringify({ 'user': res})
+            "body": JSON.stringify({ 'user': params.Item})
         }
     })
 }
 
 module.exports = {
-    getUsers
+    createUsers
 }

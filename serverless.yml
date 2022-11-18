@@ -3,11 +3,23 @@ service: crud-serverless-users
 provider:
   name: aws
   runtime: nodejs14.x
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action: 'dynamodb:*'
+          Resource: arn:aws:dynamodb:us-east-1:471893938953:table/usersTable
 
 plugins:
   - serverless-offline
   - serverless-dynamodb-local
 
+
+package:
+  individually: true
+  patterns:
+    - "!.dynamodb"
+    - "!.node_modules"
 
 custom:
   dynamodb:
@@ -23,11 +35,30 @@ custom:
 
 functions:
   get-users:
-    handler: handler.getUsers
+    handler: getusers/handler.getUsers
+    events:
+      - http:
+          path: users/{id}
+          method: GET
+  create-users:
+    handler: createUsers/handler.createUsers
     events:
       - http:
           path: users
-          method: GET
+          method: POST
+  update-users:
+    handler: updateUsers/handler.updateUsers
+    events:
+      - http:
+          path: users/{id}
+          method: PATCH
+  delete-users:
+    handler: deleteUsers/handler.deleteUsers
+    runtime: python3.8
+    events:
+      - http:
+          path: users/{id}
+          method: DELETE
 
 resources:
   Resources:
