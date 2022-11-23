@@ -43,6 +43,10 @@ functions:
       - http:
           path: users/{id}
           method: GET
+          request:
+            parameters:
+              paths:
+                id: true
   create-users:
     handler: createUsers/handler.createUsers
     package:
@@ -52,6 +56,9 @@ functions:
       - http:
           path: users
           method: POST
+          request:
+            schemas:
+              application/json: ${file(schemas/user-schema.json)}
   update-users:
     handler: updateUsers/handler.updateUsers
     package:
@@ -61,6 +68,12 @@ functions:
       - http:
           path: users/{id}
           method: PATCH
+          request:
+            parameters:
+              paths:
+                id: true
+            schemas:
+              application/json: ${file(schemas/user-schema.json)}
   delete-users:
     handler: deleteUsers/handler.deleteUsers
     runtime: python3.8
@@ -71,6 +84,10 @@ functions:
       - http:
           path: users/{id}
           method: DELETE
+          request:
+            parameters:
+              paths:
+                id: true
 
 resources:
   Resources:
@@ -87,3 +104,24 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+    S3Bucket:
+      Type: 'AWS::S3::Bucket'
+      Properties:
+        AccessControl: PublicRead
+        BucketName: bucket-serverless-course-123213
+    SampleBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref S3Bucket
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Action:
+                - 's3:GetObject'
+              Effect: Allow
+              Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref S3Bucket
+                  - /*
+              Principal: '*'

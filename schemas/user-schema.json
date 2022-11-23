@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "User",
+    "type": "object",
+    "required": ["name", "age"],
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "The person's first name.",
+        "default": ""
+      },
+      "age": {
+        "description": "Age in years which must be equal to or greater than zero.",
+        "type": "integer",
+        "minimum": 18,
+        "default": ""
+      }
+    }
+  }
