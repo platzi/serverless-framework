@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Poemas Geek Schema",
+    "type": "object",
+    "required": ["romantico", "numero_max_palabras", "lenguaje_de_programacion"],
+    "properties": {
+      "romantico": {"type": "boolean"},
+      "numero_max_palabras": {
+        "type": "integer",
+        "minimum": 30,
+        "maximum": 80
+      },
+      "lenguaje_de_programacion": {
+        "type": "string",
+        "enum": [
+          "JavaScript",
+          "Java",
+          "Python",
+          "C++",
+          "C#",
+          "PHP",
+          "TypeScript",
+          "Swift",
+          "Ruby",
+          "Objective-C"
+        ]
+      }
+    }
+  }
