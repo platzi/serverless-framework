@@ -3,12 +3,13 @@ service: crud-serverless-users
 provider:
   name: aws
   runtime: nodejs14.x
+  region: us-east-1
   iam:
     role:
       statements:
         - Effect: Allow
           Action: 'dynamodb:*'
-          Resource: arn:aws:dynamodb:us-east-1:471893938953:table/usersTable
+          Resource: arn:aws:dynamodb:us-east-1:859881342938:table/usersTable
 
 plugins:
   - serverless-offline
@@ -108,7 +109,7 @@ resources:
       Type: 'AWS::S3::Bucket'
       Properties:
         AccessControl: PublicRead
-        BucketName: bucket-serverless-course-123213
+        BucketName: bucket-serverless-course-999999
     SampleBucketPolicy:
       Type: AWS::S3::BucketPolicy
       Properties:

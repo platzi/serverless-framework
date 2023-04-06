@@ -19,7 +19,7 @@ const createUsers = async (event, context) => {
     const id = randomUUID();
 
     let userBody = JSON.parse(event.body)
-
+    console.log(userBody)   
     userBody.pk = id
 
     var params = {
